@@ -19,6 +19,27 @@ namespace MusicPlaylistAnalyzer
             string reportFilePath = args[1];
 
             List<Songs> SongsList = null;
+            try
+            {
+                SongsList = MusicStatsLoader.Load(musicDataFilePath);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Environment.Exit(2);
+            }
+
+            var report = MusicStatsReport.GenerateText(SongsList);
+
+            try
+            {
+                System.IO.File.WriteAllText(reportFilePath, report);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Environment.Exit(3);
+            }
         }
     }
     public class Songs
@@ -94,6 +115,34 @@ namespace MusicPlaylistAnalyzer
             }
 
             return SongsList;
+        }
+    }
+    public static class MusicStatsReport
+    {
+        public static string GenerateText(List<Songs> SongsList)
+        {
+            string report = "Music Analyzer Report\n\n";
+
+            if (SongsList.Count() < 1)
+            {
+                report += "No data is available.\n";
+
+                return report;
+            }
+
+            report += "Songs that received 200 or more plays: \n";
+            var q1 = from Songs in SongsList where Songs.Plays > 200 select Songs.Name;
+            if (q1.Count() > 0)
+            {
+                foreach (var name in q1)
+                {
+                    report += name + ",";
+                }
+                report.TrimEnd(',');
+                report += "\n";
+            }
+
+            return report;
         }
     }
 }
