@@ -126,7 +126,6 @@ namespace MusicPlaylistAnalyzer
             if (SongsList.Count() < 1)
             {
                 report += "No data is available.\n";
-
                 return report;
             }
 
